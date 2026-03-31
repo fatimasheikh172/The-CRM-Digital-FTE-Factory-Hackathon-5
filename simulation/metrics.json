@@ -1,0 +1,62 @@
+[
+  {
+    "channel": "web_form",
+    "latency_ms": 1442,
+    "escalated": false,
+    "tool_calls_count": 5,
+    "sentiment_score": null,
+    "customer_id": null,
+    "conversation_id": null,
+    "recorded_at": "2026-03-29T00:00:01.800781"
+  },
+  {
+    "channel": "email",
+    "latency_ms": 902,
+    "escalated": true,
+    "tool_calls_count": 5,
+    "sentiment_score": null,
+    "customer_id": null,
+    "conversation_id": null,
+    "recorded_at": "2026-03-29T00:00:04.247096"
+  },
+  {
+    "channel": "whatsapp",
+    "latency_ms": 1548,
+    "escalated": false,
+    "tool_calls_count": 5,
+    "sentiment_score": null,
+    "customer_id": null,
+    "conversation_id": null,
+    "recorded_at": "2026-03-29T00:00:07.809626"
+  },
+  {
+    "channel": "web_form",
+    "latency_ms": 1796,
+    "escalated": false,
+    "tool_calls_count": 5,
+    "sentiment_score": null,
+    "customer_id": null,
+    "conversation_id": null,
+    "recorded_at": "2026-03-29T00:00:11.370727"
+  },
+  {
+    "channel": "email",
+    "latency_ms": 1016,
+    "escalated": false,
+    "tool_calls_count": 5,
+    "sentiment_score": null,
+    "customer_id": null,
+    "conversation_id": null,
+    "recorded_at": "2026-03-29T00:00:14.233850"
+  },
+  {
+    "channel": "whatsapp",
+    "latency_ms": 1687,
+    "escalated": true,
+    "tool_calls_count": 5,
+    "sentiment_score": null,
+    "customer_id": null,
+    "conversation_id": null,
+    "recorded_at": "2026-03-29T00:00:17.875877"
+  }
+]

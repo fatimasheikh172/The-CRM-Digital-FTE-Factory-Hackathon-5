@@ -1,0 +1,103 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: customer-success-fte
+  namespace: customer-success-fte
+  labels:
+    app: customer-success-fte
+  annotations:
+    # NGINX Ingress Controller annotations
+    kubernetes.io/ingress.class: nginx
+    
+    # SSL/TLS configuration
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "10"
+    
+    # Proxy settings
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    
+    # CORS (if needed at ingress level)
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    
+    # Health check
+    nginx.ingress.kubernetes.io/health-check-path: "/health"
+    
+    # Rewrite rules (if needed)
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  # TLS configuration
+  tls:
+  - hosts:
+    - support-api.techcorp.com
+    secretName: fte-tls
+  
+  # Ingress rules
+  rules:
+  - host: support-api.techcorp.com
+    http:
+      paths:
+      # API endpoints
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: customer-success-fte
+            port:
+              number: 80
+      
+      # Web form (if served separately)
+      - path: /support
+        pathType: Prefix
+        backend:
+          service:
+            name: customer-success-fte
+            port:
+              number: 80
+      
+      # API documentation
+      - path: /docs
+        pathType: Prefix
+        backend:
+          service:
+            name: customer-success-fte
+            port:
+              number: 80
+      
+      # Health check endpoint (public)
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: customer-success-fte
+            port:
+              number: 80
+
+---
+# Alternative: Ingress for internal cluster access only
+# Uncomment if you need internal-only ingress
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: customer-success-fte-internal
+#   namespace: customer-success-fte
+#   annotations:
+#     kubernetes.io/ingress.class: nginx-internal
+# spec:
+#   rules:
+#   - host: fte-api.internal
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: customer-success-fte
+#             port:
+#               number: 80

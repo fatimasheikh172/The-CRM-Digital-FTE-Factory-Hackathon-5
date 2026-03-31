@@ -1,0 +1,51 @@
+# TechCorp Customer Success AI Agent - MCP Server Requirements
+
+# MCP Protocol
+mcp>=1.0.0
+
+# Data validation
+pydantic>=2.0.0
+
+# Database
+asyncpg>=0.31.0
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+pgvector>=0.4.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Google Gemini AI
+google-genai>=1.60.0
+
+# Web Framework (Channel Integrations)
+fastapi>=0.128.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+jinja2>=3.1.6
+aiofiles>=25.1.0
+
+# Google API (Gmail Integration)
+google-auth>=2.0.0
+google-auth-oauthlib>=1.0.0
+google-api-python-client>=2.0.0
+
+# Twilio (WhatsApp Integration)
+twilio>=9.0.0
+
+# HTTP Client
+httpx>=0.28.0
+
+# Kafka Event Streaming
+aiokafka>=0.13.0
+kafka-python>=2.3.0
+
+# Testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+httpx>=0.28.0
+faker>=40.11.0
+
+# Load Testing
+locust>=2.43.3
+aiohttp>=3.13.0

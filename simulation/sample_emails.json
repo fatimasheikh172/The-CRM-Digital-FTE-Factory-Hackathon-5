@@ -1,0 +1,29 @@
+[
+  {
+    "from": "John Smith <john.smith@example.com>",
+    "subject": "Cannot login to my account",
+    "body": "Hi TechCorp Support,\n\nI've been trying to log in to my account for the past hour but keep getting an error message saying 'Invalid credentials'. I'm sure I'm using the correct password. I've tried resetting my password twice but I'm not receiving the reset email.\n\nCan you please help me regain access to my account?\n\nThanks,\nJohn Smith",
+    "message_id": "EMAIL-SAMPLE001",
+    "thread_id": "thread_001",
+    "received_at": "2026-03-15T10:30:00",
+    "has_attachment": false
+  },
+  {
+    "from": "Sarah Johnson <sarah.j@company.com>",
+    "subject": "Billing question about Pro plan",
+    "body": "Hello,\n\nI recently upgraded to the Pro plan but I was charged twice for this month. My credit card shows two charges of $49.99 each on March 10th.\n\nCould you please look into this and issue a refund for the duplicate charge?\n\nMy account email is sarah.j@company.com.\n\nBest regards,\nSarah Johnson",
+    "message_id": "EMAIL-SAMPLE002",
+    "thread_id": "thread_002",
+    "received_at": "2026-03-15T11:45:00",
+    "has_attachment": true
+  },
+  {
+    "from": "Mike Chen <mike.chen@startup.io>",
+    "subject": "API rate limit increase request",
+    "body": "Hi there,\n\nWe're building an integration with your API and we're hitting the rate limit pretty quickly during our testing. Our current plan allows 100 requests per minute, but we need at least 500 for our use case.\n\nWhat are the options for increasing our rate limit? We're on the Business plan.\n\nThanks!\nMike Chen\nCTO, Startup.io",
+    "message_id": "EMAIL-SAMPLE003",
+    "thread_id": "thread_003",
+    "received_at": "2026-03-15T14:20:00",
+    "has_attachment": false
+  }
+]

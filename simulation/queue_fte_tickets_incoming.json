@@ -1,0 +1,49 @@
+[
+  {
+    "test": "data",
+    "message_id": "msg_20260317014408401838",
+    "topic": "fte.tickets.incoming",
+    "timestamp": "2026-03-17T01:44:08.401957",
+    "status": "processed"
+  },
+  {
+    "fallback_test": true,
+    "content": "Testing fallback queue",
+    "message_id": "msg_20260317215259881270",
+    "topic": "fte.tickets.incoming",
+    "timestamp": "2026-03-17T21:52:59.881332",
+    "status": "processed"
+  },
+  {
+    "fallback_test": true,
+    "content": "Testing fallback queue",
+    "message_id": "msg_20260317221733211705",
+    "topic": "fte.tickets.incoming",
+    "timestamp": "2026-03-17T22:17:33.212014",
+    "status": "processed"
+  },
+  {
+    "fallback_test": true,
+    "content": "Testing fallback queue",
+    "message_id": "msg_20260317224800641976",
+    "topic": "fte.tickets.incoming",
+    "timestamp": "2026-03-17T22:48:00.642136",
+    "status": "processed"
+  },
+  {
+    "fallback_test": true,
+    "content": "Testing fallback queue",
+    "message_id": "msg_20260327204108929344",
+    "topic": "fte.tickets.incoming",
+    "timestamp": "2026-03-27T20:41:08.929386",
+    "status": "processed"
+  },
+  {
+    "fallback_test": true,
+    "content": "Testing fallback queue",
+    "message_id": "msg_20260328234219719781",
+    "topic": "fte.tickets.incoming",
+    "timestamp": "2026-03-28T23:42:19.719836",
+    "status": "pending"
+  }
+]

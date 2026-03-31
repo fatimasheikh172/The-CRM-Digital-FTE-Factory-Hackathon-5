@@ -1,0 +1,108 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fte_postgres
+    environment:
+      POSTGRES_DB: fte_db
+      POSTGRES_USER: fte_user
+      POSTGRES_PASSWORD: fte_password123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fte_user -d fte_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: fte_kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    ports:
+      - "9092:9092"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  fte-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fte_api
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=fte_db
+      - DB_USER=fte_user
+      - DB_PASSWORD=fte_password123
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-your-gemini-key-here}
+      - MODEL=gemini-1.5-flash
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    networks:
+      - fte-network
+
+  fte-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fte_worker
+    command: python workers/message_processor.py
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=fte_db
+      - DB_USER=fte_user
+      - DB_PASSWORD=fte_password123
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-your-gemini-key-here}
+      - MODEL=gemini-1.5-flash
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    networks:
+      - fte-network
+
+volumes:
+  postgres_data:
+
+networks:
+  fte-network:
+    driver: bridge

@@ -1,0 +1,192 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fte-api
+  namespace: customer-success-fte
+  labels:
+    app: customer-success-fte
+    component: api
+    version: v2.6.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: customer-success-fte
+      component: api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: customer-success-fte
+        component: api
+        version: v2.6.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Service account for pod identity (if using IRSA or similar)
+      # serviceAccountName: fte-api-sa
+      
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      
+      containers:
+      - name: fte-api
+        image: customer-success-fte:latest
+        imagePullPolicy: Always
+        command:
+        - uvicorn
+        - api.main:app
+        - --host
+        - "0.0.0.0"
+        - --port
+        - "8000"
+        
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        
+        # Environment from ConfigMap and Secret
+        envFrom:
+        - configMapRef:
+            name: fte-config
+        - secretRef:
+            name: fte-secrets
+        
+        # Additional environment variables
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_DB
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fte-secrets
+              key: POSTGRES_PASSWORD
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: KAFKA_BOOTSTRAP_SERVERS
+        
+        # Resource requests and limits
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # Liveness probe - checks if container is running
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Readiness probe - checks if container can serve traffic
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Startup probe - for slow starting containers
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+        
+        # Volume mounts (if needed)
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        
+        # Security context for the container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      
+      # Volumes
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      
+      # Node selection (optional)
+      # nodeSelector:
+      #   node-type: api
+      
+      # Tolerations (optional)
+      # tolerations:
+      # - key: "dedicated"
+      #   operator: "Equal"
+      #   value: "api"
+      #   effect: "NoSchedule"
+      
+      # Affinity rules (optional)
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - api
+              topologyKey: kubernetes.io/hostname
+      
+      # DNS configuration
+      dnsPolicy: ClusterFirst
+      
+      # Restart policy
+      restartPolicy: Always
+      
+      # Termination grace period
+      terminationGracePeriodSeconds: 30

@@ -1,0 +1,9 @@
+[
+  {
+    "channel": "email",
+    "message_id": "msg_20260317014408053202",
+    "topic": "fte.channels.email.inbound",
+    "timestamp": "2026-03-17T01:44:08.053325",
+    "status": "pending"
+  }
+]

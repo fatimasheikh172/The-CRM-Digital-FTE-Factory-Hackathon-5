@@ -1,0 +1,63 @@
+[
+  {
+    "id": 1,
+    "channel": "email",
+    "from": "john@example.com",
+    "subject": "Cannot login",
+    "message": "I have been trying to login since yesterday but it keeps saying wrong password. Reset email is not arriving.",
+    "expected_action": "guide through password reset, check spam folder"
+  },
+  {
+    "id": 2,
+    "channel": "whatsapp",
+    "from": "+1234567890",
+    "message": "hi my app is not working",
+    "expected_action": "ask for details, troubleshoot"
+  },
+  {
+    "id": 3,
+    "channel": "web_form",
+    "from": "sara@business.com",
+    "subject": "API rate limit issue",
+    "message": "We are hitting rate limits. We need more than 1000 requests per hour.",
+    "expected_action": "explain limits, suggest Enterprise plan"
+  },
+  {
+    "id": 4,
+    "channel": "email",
+    "from": "angry@customer.com",
+    "subject": "I WANT A REFUND",
+    "message": "Your product has been broken for 3 days! I want my money back NOW!",
+    "expected_action": "escalate immediately"
+  },
+  {
+    "id": 5,
+    "channel": "whatsapp",
+    "from": "+9876543210",
+    "message": "how much is pro plan",
+    "expected_action": "provide pricing info"
+  },
+  {
+    "id": 6,
+    "channel": "web_form",
+    "from": "dev@startup.com",
+    "subject": "API Documentation",
+    "message": "Where is the API documentation? I need to integrate your tool.",
+    "expected_action": "provide docs link and API key instructions"
+  },
+  {
+    "id": 7,
+    "channel": "email",
+    "from": "newuser@gmail.com",
+    "subject": "Getting started",
+    "message": "I just signed up. How do I invite my team members?",
+    "expected_action": "provide getting started steps"
+  },
+  {
+    "id": 8,
+    "channel": "whatsapp",
+    "from": "+1122334455",
+    "message": "I want to talk to a human agent",
+    "expected_action": "escalate to human immediately"
+  }
+]

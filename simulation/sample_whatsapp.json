@@ -1,0 +1,26 @@
+[
+  {
+    "from": "whatsapp:+14155551234",
+    "to": "whatsapp:+14155559999",
+    "body": "hi my app is not working",
+    "message_sid": "SM-SAMPLE001",
+    "conversation_sid": "CH-001",
+    "timestamp": "2026-03-15T09:15:00"
+  },
+  {
+    "from": "whatsapp:+44207123456",
+    "to": "whatsapp:+14155559999",
+    "body": "how much is the pro plan?",
+    "message_sid": "SM-SAMPLE002",
+    "conversation_sid": "CH-002",
+    "timestamp": "2026-03-15T12:30:00"
+  },
+  {
+    "from": "whatsapp:+16175551234",
+    "to": "whatsapp:+14155559999",
+    "body": "I need to talk to a human agent please",
+    "message_sid": "SM-SAMPLE003",
+    "conversation_sid": "CH-003",
+    "timestamp": "2026-03-15T16:45:00"
+  }
+]

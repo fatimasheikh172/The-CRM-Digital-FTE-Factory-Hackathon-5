@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fte-worker
+  namespace: customer-success-fte
+  labels:
+    app: customer-success-fte
+    component: worker
+    version: v2.6.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: customer-success-fte
+      component: worker
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: customer-success-fte
+        component: worker
+        version: v2.6.0
+    spec:
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      
+      containers:
+      - name: fte-worker
+        image: customer-success-fte:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - workers/message_processor.py
+        
+        # Environment from ConfigMap and Secret
+        envFrom:
+        - configMapRef:
+            name: fte-config
+        - secretRef:
+            name: fte-secrets
+        
+        # Additional environment variables
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_DB
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: POSTGRES_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fte-secrets
+              key: POSTGRES_PASSWORD
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          valueFrom:
+            configMapKeyRef:
+              name: fte-config
+              key: KAFKA_BOOTSTRAP_SERVERS
+        
+        # Resource requests and limits
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # Worker doesn't need HTTP probes (no HTTP server)
+        # Use exec probe for health check if needed
+        livenessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "import sys; sys.exit(0)"
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        # Volume mounts
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        
+        # Security context for the container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      
+      # Volumes
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      
+      # Affinity rules - spread workers across nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - worker
+              topologyKey: kubernetes.io/hostname
+      
+      # DNS configuration
+      dnsPolicy: ClusterFirst
+      
+      # Restart policy - always restart workers
+      restartPolicy: Always
+      
+      # Termination grace period - allow time to finish processing
+      terminationGracePeriodSeconds: 60

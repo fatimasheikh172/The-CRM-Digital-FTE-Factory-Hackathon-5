@@ -1,0 +1,140 @@
+{
+  "manifest_version": "1.0",
+  "agent_name": "TechCorp Customer Success FTE",
+  "total_skills": 5,
+  "skills": [
+    {
+      "skill_id": "SKL001",
+      "name": "knowledge_retrieval",
+      "display_name": "Knowledge Retrieval Skill",
+      "version": "1.0",
+      "description": "Searches product documentation to answer customer questions",
+      "when_to_use": "Customer asks any product-related question",
+      "inputs": {
+        "query": "string - customer question",
+        "max_results": "integer - how many results (default 5)",
+        "category": "string - optional filter"
+      },
+      "outputs": {
+        "results": "list of relevant doc sections",
+        "confidence": "float 0.0 to 1.0",
+        "found": "boolean"
+      },
+      "constraints": [
+        "Max 5 results per search",
+        "Only searches product-docs.md",
+        "Returns empty if no match found"
+      ],
+      "performance": {
+        "avg_response_time_ms": 0.67,
+        "accuracy_rate": 1.0
+      }
+    },
+    {
+      "skill_id": "SKL002",
+      "name": "sentiment_analysis",
+      "display_name": "Sentiment Analysis Skill",
+      "version": "1.0",
+      "description": "Analyzes customer message emotion and urgency",
+      "when_to_use": "Called on EVERY incoming customer message",
+      "inputs": {
+        "message": "string - customer message text"
+      },
+      "outputs": {
+        "score": "float 0.0 (angry) to 1.0 (happy)",
+        "label": "positive / neutral / negative",
+        "recommendation": "string - what agent should do"
+      },
+      "constraints": [
+        "Must run before generating any response",
+        "Score below 0.3 triggers escalation review"
+      ],
+      "performance": {
+        "avg_response_time_ms": 0.07,
+        "accuracy_rate": 1.0
+      }
+    },
+    {
+      "skill_id": "SKL003",
+      "name": "escalation_decision",
+      "display_name": "Escalation Decision Skill",
+      "version": "1.0",
+      "description": "Decides if conversation needs human intervention",
+      "when_to_use": "After generating response, before sending",
+      "inputs": {
+        "message": "string - customer message",
+        "sentiment_score": "float - from sentiment skill",
+        "conversation_history": "list - past messages"
+      },
+      "outputs": {
+        "should_escalate": "boolean",
+        "reason": "string - why escalating",
+        "urgency": "normal / high / critical"
+      },
+      "constraints": [
+        "Always escalate refund requests",
+        "Always escalate legal threats",
+        "Always escalate human agent requests"
+      ],
+      "performance": {
+        "avg_response_time_ms": 0.04,
+        "accuracy_rate": 1.0
+      }
+    },
+    {
+      "skill_id": "SKL004",
+      "name": "channel_adaptation",
+      "display_name": "Channel Adaptation Skill",
+      "version": "1.0",
+      "description": "Formats response appropriately for each channel",
+      "when_to_use": "Before sending ANY response to customer",
+      "inputs": {
+        "response": "string - raw response text",
+        "channel": "email / whatsapp / web_form"
+      },
+      "outputs": {
+        "formatted_response": "string - channel-ready response",
+        "channel_used": "string",
+        "length": "integer - character count"
+      },
+      "constraints": [
+        "Email: max 300 words, formal tone",
+        "WhatsApp: max 300 chars, casual tone",
+        "Web Form: max 200 words, semi-formal"
+      ],
+      "performance": {
+        "avg_response_time_ms": 0.84,
+        "accuracy_rate": 1.0
+      }
+    },
+    {
+      "skill_id": "SKL005",
+      "name": "customer_identification",
+      "display_name": "Customer Identification Skill",
+      "version": "1.0",
+      "description": "Identifies customer across all channels using email or phone",
+      "when_to_use": "On EVERY incoming message to identify customer",
+      "inputs": {
+        "email": "string - optional",
+        "phone": "string - optional",
+        "channel": "string - current channel"
+      },
+      "outputs": {
+        "customer_id": "string - unique identifier",
+        "is_new_customer": "boolean",
+        "is_returning": "boolean",
+        "previous_channels": "list of channels used before",
+        "history_summary": "string - brief past interaction summary"
+      },
+      "constraints": [
+        "Email takes priority over phone for identification",
+        "Must create new customer if not found",
+        "Must check all channels for history"
+      ],
+      "performance": {
+        "avg_response_time_ms": 0.05,
+        "accuracy_rate": 1.0
+      }
+    }
+  ]
+}
