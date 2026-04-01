@@ -10,8 +10,10 @@ Production API service with endpoints for:
 """
 
 import logging
+import os
 from datetime import datetime
 from contextlib import asynccontextmanager
+from typing import Dict, List, Any
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,8 +39,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Demo mode - if True, return mock data without database
+DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
+
 # Global Kafka producer
 _kafka_producer = None
+
+# In-memory storage for demo mode
+_demo_tickets: List[Dict[str, Any]] = []
+_demo_customers: List[Dict[str, Any]] = []
+_demo_messages: List[Dict[str, Any]] = []
 
 
 @asynccontextmanager

@@ -2542,6 +2542,11 @@
 
     <!-- JAVASCRIPT -->
     <script>
+        // Dynamic API base URL - uses localhost for local dev, production URL otherwise
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000'
+            : window.location.origin;
+        
         // ===== NAVIGATION =====
         function navigateTo(pageId) {
             // Hide all pages
@@ -2752,7 +2757,7 @@
             }));
 
             try {
-                const response = await fetch('http://localhost:8000/support/chat', {
+                const response = await fetch(API_BASE + '/support/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

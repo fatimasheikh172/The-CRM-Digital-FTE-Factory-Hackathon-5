@@ -47,13 +47,25 @@ class DatabaseConnection:
         """Initialize database connection manager."""
         self._pool: Optional[asyncpg.Pool] = None
         self._initialized = False
-        
-        # Database configuration from environment
-        self.host = os.getenv('DB_HOST', 'localhost')
-        self.port = int(os.getenv('DB_PORT', 5432))
-        self.database = os.getenv('DB_NAME', 'fte_db')
-        self.user = os.getenv('DB_USER', 'fte_user')
-        self.password = os.getenv('DB_PASSWORD', 'fte_password123')
+        self._connection_string: Optional[str] = None
+
+        # Railway provides DATABASE_URL, local uses individual vars
+        database_url = os.getenv('DATABASE_URL')
+        if database_url:
+            # Railway mode - parse DATABASE_URL
+            # asyncpg uses postgresql:// format (not postgres://)
+            if database_url.startswith("postgres://"):
+                database_url = database_url.replace("postgres://", "postgresql://", 1)
+            self._connection_string = database_url
+            logger.info("Using DATABASE_URL for connection (Railway mode)")
+        else:
+            # Local mode - use individual variables
+            self.host = os.getenv('DB_HOST', 'localhost')
+            self.port = int(os.getenv('DB_PORT', 5432))
+            self.database = os.getenv('DB_NAME', 'fte_db')
+            self.user = os.getenv('DB_USER', 'fte_user')
+            self.password = os.getenv('DB_PASSWORD', 'fte_password123')
+            logger.info(f"Using individual env vars for connection (Local mode): {self.host}:{self.port}/{self.database}")
     
     async def initialize(self) -> None:
         """

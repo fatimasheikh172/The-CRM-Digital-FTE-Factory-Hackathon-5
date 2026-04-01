@@ -3,6 +3,8 @@ TechCorp Customer Success AI Agent - Kafka Client
 
 Real Apache Kafka producer and consumer implementation
 using aiokafka for async operations.
+
+Fallback mode: If Kafka is unavailable, uses in-memory queue.
 """
 
 import asyncio
@@ -10,6 +12,7 @@ import json
 import logging
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Callable
+from collections import deque
 
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 from aiokafka.admin import AIOKafkaAdminClient, NewTopic
@@ -20,6 +23,10 @@ from production.config import AgentConfig
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# In-memory queue for fallback mode
+_in_memory_queues: Dict[str, deque] = {}
+_fallback_mode: bool = False
 
 
 # ============================================================================

@@ -1,10 +1,8 @@
-# TechCorp Customer Success AI Agent - MCP Server Requirements
-
-# MCP Protocol
-mcp>=1.0.0
+# TechCorp Customer Success AI Agent - Production Requirements
 
 # Data validation
 pydantic>=2.0.0
+pydantic[email]>=2.0.0
 
 # Database
 asyncpg>=0.31.0
@@ -18,9 +16,9 @@ python-dotenv>=1.0.0
 # Google Gemini AI
 google-genai>=1.60.0
 
-# Web Framework (Channel Integrations)
+# Web Framework
 fastapi>=0.128.0
-uvicorn>=0.24.0
+uvicorn[standard]>=0.24.0
 python-multipart>=0.0.6
 jinja2>=3.1.6
 aiofiles>=25.1.0
@@ -40,12 +38,5 @@ httpx>=0.28.0
 aiokafka>=0.13.0
 kafka-python>=2.3.0
 
-# Testing
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
-httpx>=0.28.0
-faker>=40.11.0
-
-# Load Testing
-locust>=2.43.3
-aiohttp>=3.13.0
+# MCP Protocol
+mcp>=1.0.0
