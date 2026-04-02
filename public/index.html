@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorp FTE - AI Customer Success Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #111118;
+            --bg-card: #16161E;
+            --bg-card-hover: #1A1A25;
+            --accent-purple: #6C63FF;
+            --accent-teal: #00D4AA;
+            --accent-red: #FF4757;
+            --accent-amber: #FFB347;
+            --text-primary: #F0F0F5;
+            --text-secondary: #8B8B9E;
+            --border-color: rgba(108, 99, 255, 0.15);
+            --border-glow: rgba(108, 99, 255, 0.4);
+            --gradient-purple: linear-gradient(135deg, #6C63FF 0%, #8B85FF 100%);
+            --gradient-dark: linear-gradient(180deg, #1A1A2E 0%, #0A0A0F 100%);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); }
+        h3 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+        h4 { font-size: 1.125rem; }
+
+        p {
+            color: var(--text-secondary);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s ease;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--gradient-purple);
+            color: white;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .btn-success {
+            background: var(--accent-teal);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background: #00E5B8;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent-purple);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 15, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-purple);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-text span {
+            color: var(--accent-purple);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: var(--accent-purple);
+            color: white;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .nav-cta {
+            margin-left: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ===== PAGE CONTAINER ===== */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 80px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: var(--gradient-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(108, 99, 255, 0.15);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--accent-purple);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-teal);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero h1 {
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #F0F0F5 0%, #8B8B9E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            margin-bottom: 0.75rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        /* ===== FEATURES GRID ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.75rem;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .feature-card.teal { border-left-color: var(--accent-teal); }
+        .feature-card.red { border-left-color: var(--accent-red); }
+        .feature-card.green { border-left-color: var(--accent-teal); }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon.purple { background: rgba(108, 99, 255, 0.15); color: var(--accent-purple); }
+        .feature-icon.teal { background: rgba(0, 212, 170, 0.15); color: var(--accent-teal); }
+        .feature-icon.red { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); }
+        .feature-icon.green { background: rgba(0, 212, 170, 0.15); color: var(--accent-teal); }
+
+        .feature-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== CHANNELS SECTION ===== */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .channel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .channel-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-4px);
+        }
+
+        .channel-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.25rem;
+        }
+
+        .channel-icon.email { background: rgba(108, 99, 255, 0.15); }
+        .channel-icon.whatsapp { background: rgba(0, 212, 170, 0.15); }
+        .channel-icon.web { background: rgba(255, 71, 87, 0.15); }
+
+        .channel-name {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .channel-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 212, 170, 0.15);
+            color: var(--accent-teal);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ===== HOW IT WORKS ===== */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            position: relative;
+        }
+
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-teal));
+            z-index: 0;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.4);
+        }
+
+        .step-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* ===== TECH STACK ===== */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .tech-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .tech-card:hover {
+            border-color: var(--accent-purple);
+            background: var(--bg-card-hover);
+        }
+
+        .tech-name {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            background: #1A1A2E;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            margin-bottom: 1rem;
+        }
+
+        .cta-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--bg-secondary);
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .footer-tagline {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-purple);
+        }
+
+        /* ===== SUPPORT PORTAL ===== */
+        .portal-header {
+            background: linear-gradient(135deg, #1A1A2E 0%, #0A0A0F 100%);
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .portal-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .portal-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .portal-stat-value {
+            color: var(--accent-teal);
+            font-weight: 600;
+        }
+
+        .portal-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .portal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .portal-card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portal-card-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--accent-teal);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-message-title {
+            color: var(--accent-teal);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .success-message-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tracker-result {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .tracker-result.show {
+            display: block;
+        }
+
+        .tracker-ticket-id {
+            font-family: monospace;
+            background: rgba(108, 99, 255, 0.15);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: var(--accent-purple);
+        }
+
+        .tracker-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .tracker-detail {
+            font-size: 0.875rem;
+        }
+
+        .tracker-detail-label {
+            color: var(--text-secondary);
+        }
+
+        .tracker-detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.open { background: rgba(108, 99, 255, 0.15); color: var(--accent-purple); }
+        .status-badge.in-progress { background: rgba(255, 179, 71, 0.15); color: var(--accent-amber); }
+        .status-badge.resolved { background: rgba(0, 212, 170, 0.15); color: var(--accent-teal); }
+        .status-badge.escalated { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .dashboard-sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .sidebar-link.active {
+            background: var(--accent-purple);
+            color: white;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+        }
+
+        .sidebar-agent-status {
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .agent-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+        }
+
+        .agent-status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent-teal);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .agent-status-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .agent-status-text strong {
+            color: var(--text-primary);
+        }
+
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-top: 3px solid var(--accent-purple);
+        }
+
+        .metric-card.teal { border-top-color: var(--accent-teal); }
+        .metric-card.red { border-top-color: var(--accent-red); }
+        .metric-card.amber { border-top-color: var(--accent-amber); }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metric-change {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .metric-change.positive { color: var(--accent-teal); }
+        .metric-change.negative { color: var(--accent-red); }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .dashboard-card-title {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tickets-table th,
+        .tickets-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tickets-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .tickets-table td {
+            font-size: 0.875rem;
+        }
+
+        .tickets-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .channel-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .channel-item:last-child {
+            border-bottom: none;
+        }
+
+        .channel-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .channel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .channel-dot.email { background: var(--accent-purple); }
+        .channel-dot.whatsapp { background: var(--accent-teal); }
+        .channel-dot.web { background: var(--accent-red); }
+
+        .channel-progress {
+            width: 100px;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .channel-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--accent-purple);
+        }
+
+        .sentiment-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sentiment-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .sentiment-badge.positive { background: rgba(0, 212, 170, 0.15); color: var(--accent-teal); }
+        .sentiment-badge.neutral { background: rgba(139, 139, 158, 0.15); color: var(--text-secondary); }
+        .sentiment-badge.negative { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .kafka-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .kafka-topic {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: var(--accent-purple);
+        }
+
+        .skills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .skill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .skill-name {
+            font-size: 0.875rem;
+        }
+
+        .skill-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .skill-stats span {
+            color: var(--accent-teal);
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .tool-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-teal);
+            border-radius: 50%;
+        }
+
+        /* ===== ABOUT PAGE ===== */
+        .about-hero {
+            background: var(--gradient-dark);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .mission-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .mission-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mission-text {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .about-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .about-card-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(108, 99, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-card-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .about-card-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .tech-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .tech-item-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tech-item-name {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .numbers-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            padding: 3rem 2rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .number-item {
+            text-align: center;
+        }
+
+        .number-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 0.25rem;
+        }
+
+        .number-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* ===== CHAT WIDGET ===== */
+        .chat-widget-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+            transition: all 0.3s ease;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-widget-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(108, 99, 255, 0.5);
+        }
+
+        .chat-widget-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 380px;
+            height: 550px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-widget-panel.active {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-header {
+            background: var(--gradient-purple);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .chat-header-text h4 {
+            font-size: 16px;
+            margin: 0;
+            color: white;
+        }
+
+        .chat-header-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2px;
+        }
+
+        .chat-status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00E5B8;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .chat-close-btn:hover {
+            opacity: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            background: var(--accent-purple);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.assistant {
+            align-self: flex-start;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.escalated {
+            align-self: center;
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .chat-typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            width: fit-content;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .chat-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .chat-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            background: var(--bg-secondary);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-purple);
+        }
+
+        .chat-send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send-btn:hover {
+            background: var(--accent-purple);
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-footer {
+            padding: 8px 16px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .chat-footer a {
+            color: var(--accent-purple);
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .numbers-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                flex-wrap: wrap;
+            }
+            
+            .nav-links {
+                order: 3;
+                width: 100%;
+                margin-top: 1rem;
+                justify-content: center;
+            }
+            
+            .nav-cta {
+                margin-left: 0;
+                order: 2;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                order: 1;
+            }
+            
+            .portal-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                flex-direction: column;
+            }
+            
+            .dashboard-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .numbers-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .steps-container::before {
+                display: none;
+            }
+            
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* ===== UTILITIES ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-purple { color: var(--accent-purple); }
+        .text-teal { color: var(--accent-teal); }
+        .text-red { color: var(--accent-red); }
+        .text-amber { color: var(--accent-amber); }
+
+        .bg-purple { background: var(--accent-purple); }
+        .bg-teal { background: var(--accent-teal); }
+        .bg-red { background: var(--accent-red); }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-content">
+            <a href="#" class="logo" onclick="navigateTo('home')">
+                <div class="logo-icon">T</div>
+                <span class="logo-text">TechCorp <span>FTE</span></span>
+            </a>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="#" class="nav-link active" data-page="home" onclick="navigateTo('home')">Home</a>
+                <a href="#" class="nav-link" data-page="support" onclick="navigateTo('support')">Support</a>
+                <a href="#" class="nav-link" data-page="dashboard" onclick="navigateTo('dashboard')">Dashboard</a>
+                <a href="#" class="nav-link" data-page="about" onclick="navigateTo('about')">About</a>
+                <div class="nav-cta">
+                    <button class="btn btn-primary" onclick="navigateTo('support')">Get Support</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE 1: HOME -->
+    <div class="page active" id="page-home">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                AI-Powered • 24/7 Support
+            </div>
+            <h1>Your AI Customer Success Team — Never Sleeps</h1>
+            <p class="hero-subtitle">
+                TechCorp FTE delivers intelligent, multi-channel customer support powered by advanced AI. 
+                Resolve tickets faster with sentiment analysis, smart escalation, and cross-channel memory.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="navigateTo('support')">
+                    📝 Submit Request
+                </button>
+                <button class="btn btn-secondary" onclick="navigateTo('dashboard')">
+                    📊 View Dashboard
+                </button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Availability</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1.4s</div>
+                    <div class="stat-label">Avg Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">84%</div>
+                    <div class="stat-label">Resolution Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Channels</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Built for modern support teams</h2>
+                <p class="section-subtitle">Everything you need to deliver exceptional customer experiences</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon purple">⚡</div>
+                    <h3 class="feature-title">Instant AI Responses</h3>
+                    <p class="feature-desc">Powered by Gemini 1.5 Flash for lightning-fast, accurate responses to customer inquiries across all channels.</p>
+                </div>
+                <div class="feature-card teal">
+                    <div class="feature-icon teal">🎫</div>
+                    <h3 class="feature-title">Smart Ticket Management</h3>
+                    <p class="feature-desc">Automatic ticket creation, categorization, and routing with full conversation history and context.</p>
+                </div>
+                <div class="feature-card red">
+                    <div class="feature-icon red">🚨</div>
+                    <h3 class="feature-title">Intelligent Escalation</h3>
+                    <p class="feature-desc">AI-driven escalation decisions based on sentiment, complexity, and SLA thresholds.</p>
+                </div>
+                <div class="feature-card green">
+                    <div class="feature-icon green">💚</div>
+                    <h3 class="feature-title">Sentiment Analysis</h3>
+                    <p class="feature-desc">Real-time emotion detection to prioritize urgent cases and adapt response tone automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon purple">🔗</div>
+                    <h3 class="feature-title">Cross-Channel Memory</h3>
+                    <p class="feature-desc">Unified customer view across Email, WhatsApp, and Web with persistent conversation history.</p>
+                </div>
+                <div class="feature-card teal">
+                    <div class="feature-icon teal">📈</div>
+                    <h3 class="feature-title">Performance Analytics</h3>
+                    <p class="feature-desc">Comprehensive metrics dashboard with real-time insights into response times and resolution rates.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHANNELS -->
+        <section class="section" style="background: var(--bg-secondary);">
+            <div class="section-header">
+                <h2 class="section-title">One agent. Three channels.</h2>
+                <p class="section-subtitle">Seamless support wherever your customers are</p>
+            </div>
+            <div class="channels-grid">
+                <div class="channel-card">
+                    <div class="channel-icon email">📧</div>
+                    <h3 class="channel-name">Email Support</h3>
+                    <p class="channel-badge">~1.2s response</p>
+                </div>
+                <div class="channel-card">
+                    <div class="channel-icon whatsapp">💬</div>
+                    <h3 class="channel-name">WhatsApp</h3>
+                    <p class="channel-badge">~1.4s response</p>
+                </div>
+                <div class="channel-card">
+                    <div class="channel-icon web">🌐</div>
+                    <h3 class="channel-name">Web Form</h3>
+                    <p class="channel-badge">~1.5s response</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">How it works</h2>
+                <p class="section-subtitle">Four simple steps to better customer support</p>
+            </div>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Customer Reaches Out</h3>
+                    <p class="step-desc">Via Email, WhatsApp, or Web Form</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">AI Analyzes Request</h3>
+                    <p class="step-desc">Sentiment, intent, and context detection</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Smart Response</h3>
+                    <p class="step-desc">Instant reply or ticket creation</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Resolution</h3>
+                    <p class="step-desc">Issue resolved or escalated if needed</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECH STACK -->
+        <section class="section" style="background: var(--bg-secondary);">
+            <div class="section-header">
+                <h2 class="section-title">Powered by modern technology</h2>
+                <p class="section-subtitle">Enterprise-grade infrastructure</p>
+            </div>
+            <div class="tech-stack">
+                <div class="tech-card"><div class="tech-name">✨ Gemini AI</div></div>
+                <div class="tech-card"><div class="tech-name">⚡ FastAPI</div></div>
+                <div class="tech-card"><div class="tech-name">🐘 PostgreSQL</div></div>
+                <div class="tech-card"><div class="tech-name">📡 Kafka</div></div>
+                <div class="tech-card"><div class="tech-name">☸️ Kubernetes</div></div>
+                <div class="tech-card"><div class="tech-name">🤖 Claude Code</div></div>
+                <div class="tech-card"><div class="tech-name">📱 Twilio</div></div>
+                <div class="tech-card"><div class="tech-name">📧 Gmail API</div></div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to transform your support?</h2>
+                <p class="cta-subtitle">Join hundreds of companies delivering exceptional customer experiences with TechCorp FTE.</p>
+                <button class="btn btn-primary" onclick="navigateTo('support')">Start Supporting Now</button>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <div class="logo-icon">T</div>
+                        <span class="logo-text">TechCorp <span>FTE</span></span>
+                    </div>
+                    <p class="footer-tagline">AI-Powered Customer Success Platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" onclick="navigateTo('home')">Home</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('support')">Support</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('dashboard')">Dashboard</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('about')">About</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- PAGE 2: SUPPORT PORTAL -->
+    <div class="page" id="page-support">
+        <div class="portal-header">
+            <h2>Customer Support Portal</h2>
+            <div class="portal-stats">
+                <div class="portal-stat">
+                    <span class="portal-stat-value">207</span> resolved today
+                </div>
+                <div class="portal-stat">
+                    <span class="portal-stat-value">1.4s</span> avg response
+                </div>
+            </div>
+        </div>
+        <div class="portal-content">
+            <!-- SUPPORT FORM -->
+            <div class="portal-card">
+                <h3 class="portal-card-title">Submit a Support Request</h3>
+                <p class="portal-card-subtitle">Fill out the form below and we'll get back to you within minutes</p>
+                
+                <div class="success-message" id="successMessage">
+                    <div class="success-message-title">✓ Ticket Created Successfully</div>
+                    <div class="success-message-text">Your ticket ID is <span class="tracker-ticket-id" id="ticketIdDisplay">TKT-000000</span>. We've sent a confirmation email.</div>
+                </div>
+
+                <form id="supportForm" onsubmit="handleSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-input" placeholder="Brief description of your issue" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" required>
+                                <option value="">Select category</option>
+                                <option value="technical">Technical Issue</option>
+                                <option value="billing">Billing Question</option>
+                                <option value="feature">Feature Request</option>
+                                <option value="account">Account Access</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" required>
+                                <option value="">Select priority</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Channel</label>
+                            <select class="form-select" required>
+                                <option value="">Select channel</option>
+                                <option value="email">Email</option>
+                                <option value="whatsapp">WhatsApp</option>
+                                <option value="web">Web Form</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-textarea" id="messageInput" placeholder="Describe your issue in detail..." maxlength="2000" required></textarea>
+                        <div class="char-counter"><span id="charCount">0</span>/2000</div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                        <button type="button" class="btn btn-outline" onclick="clearForm()">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TICKET TRACKER -->
+            <div class="portal-card">
+                <h3 class="portal-card-title">Track Your Ticket</h3>
+                <p class="portal-card-subtitle">Enter your ticket ID to check status</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Ticket ID</label>
+                    <input type="text" class="form-input" id="trackInput" placeholder="TKT-123456">
+                </div>
+                <button class="btn btn-secondary" onclick="trackTicket()">Track Ticket</button>
+
+                <div class="tracker-result" id="trackerResult">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <strong>Ticket <span class="tracker-ticket-id" id="trackTicketId">TKT-123456</span></strong>
+                        <span class="status-badge in-progress" id="trackStatus">In Progress</span>
+                    </div>
+                    <div class="tracker-details">
+                        <div class="tracker-detail">
+                            <div class="tracker-detail-label">Channel</div>
+                            <div class="tracker-detail-value" id="trackChannel">Email</div>
+                        </div>
+                        <div class="tracker-detail">
+                            <div class="tracker-detail-label">Priority</div>
+                            <div class="tracker-detail-value" id="trackPriority">High</div>
+                        </div>
+                        <div class="tracker-detail">
+                            <div class="tracker-detail-label">Created</div>
+                            <div class="tracker-detail-value" id="trackCreated">2024-01-15 10:30</div>
+                        </div>
+                        <div class="tracker-detail">
+                            <div class="tracker-detail-label">Category</div>
+                            <div class="tracker-detail-value" id="trackCategory">Technical</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <div class="logo-icon">T</div>
+                        <span class="logo-text">TechCorp <span>FTE</span></span>
+                    </div>
+                    <p class="footer-tagline">AI-Powered Customer Success Platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" onclick="navigateTo('home')">Home</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('support')">Support</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('dashboard')">Dashboard</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('about')">About</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- PAGE 3: DASHBOARD -->
+    <div class="page" id="page-dashboard">
+        <div class="dashboard">
+            <!-- SIDEBAR -->
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">T</div>
+                    <span class="logo-text">TechCorp <span>FTE</span></span>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="#" class="sidebar-link active" data-tab="overview" onclick="switchTab('overview')">
+                        📊 Overview
+                    </a>
+                    <a href="#" class="sidebar-link" data-tab="tickets" onclick="switchTab('tickets')">
+                        🎫 Tickets
+                    </a>
+                    <a href="#" class="sidebar-link" data-tab="channels" onclick="switchTab('channels')">
+                        📡 Channels
+                    </a>
+                    <a href="#" class="sidebar-link" data-tab="agent" onclick="switchTab('agent')">
+                        🤖 Agent
+                    </a>
+                </nav>
+                <div class="sidebar-agent-status">
+                    <div class="agent-status">
+                        <span class="agent-status-dot"></span>
+                        <div>
+                            <div class="agent-status-text"><strong>AI Agent</strong> Online</div>
+                            <div class="agent-status-text" style="font-size: 0.75rem;">Gemini 1.5 Flash</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="dashboard-main">
+                <!-- OVERVIEW TAB -->
+                <div class="tab-content active" id="tab-overview">
+                    <div class="dashboard-header">
+                        <h2 class="dashboard-title">Overview</h2>
+                        <p class="dashboard-subtitle">Real-time performance metrics</p>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Tickets Today</div>
+                            <div class="metric-value">207</div>
+                            <div class="metric-change positive">↑ 12% from yesterday</div>
+                        </div>
+                        <div class="metric-card teal">
+                            <div class="metric-label">Resolved</div>
+                            <div class="metric-value">174</div>
+                            <div class="metric-change positive">↑ 8% from yesterday</div>
+                        </div>
+                        <div class="metric-card amber">
+                            <div class="metric-label">Avg Response</div>
+                            <div class="metric-value">1.4s</div>
+                            <div class="metric-change positive">↓ 0.2s improvement</div>
+                        </div>
+                        <div class="metric-card red">
+                            <div class="metric-label">Escalated</div>
+                            <div class="metric-value">16</div>
+                            <div class="metric-change negative">↑ 3% from yesterday</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <h3 class="dashboard-card-title">Recent Tickets</h3>
+                            <table class="tickets-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Subject</th>
+                                        <th>Channel</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TKT-892341</td>
+                                        <td>Login issue</td>
+                                        <td>Email</td>
+                                        <td><span class="status-badge resolved">Resolved</span></td>
+                                        <td>Medium</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TKT-892340</td>
+                                        <td>Billing question</td>
+                                        <td>WhatsApp</td>
+                                        <td><span class="status-badge in-progress">In Progress</span></td>
+                                        <td>Low</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TKT-892339</td>
+                                        <td>Feature request</td>
+                                        <td>Web</td>
+                                        <td><span class="status-badge open">Open</span></td>
+                                        <td>Low</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TKT-892338</td>
+                                        <td>API integration</td>
+                                        <td>Email</td>
+                                        <td><span class="status-badge escalated">Escalated</span></td>
+                                        <td>High</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TKT-892337</td>
+                                        <td>Password reset</td>
+                                        <td>WhatsApp</td>
+                                        <td><span class="status-badge resolved">Resolved</span></td>
+                                        <td>Medium</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <div class="dashboard-card mb-2">
+                                <h3 class="dashboard-card-title">Channel Breakdown</h3>
+                                <div class="channel-item">
+                                    <div class="channel-info">
+                                        <span class="channel-dot email"></span>
+                                        <span>Email</span>
+                                    </div>
+                                    <div class="channel-progress">
+                                        <div class="channel-progress-bar" style="width: 45%;"></div>
+                                    </div>
+                                </div>
+                                <div class="channel-item">
+                                    <div class="channel-info">
+                                        <span class="channel-dot whatsapp"></span>
+                                        <span>WhatsApp</span>
+                                    </div>
+                                    <div class="channel-progress">
+                                        <div class="channel-progress-bar" style="width: 35%; background: var(--accent-teal);"></div>
+                                    </div>
+                                </div>
+                                <div class="channel-item">
+                                    <div class="channel-info">
+                                        <span class="channel-dot web"></span>
+                                        <span>Web Form</span>
+                                    </div>
+                                    <div class="channel-progress">
+                                        <div class="channel-progress-bar" style="width: 20%; background: var(--accent-red);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <h3 class="dashboard-card-title">Sentiment Distribution</h3>
+                                <div class="sentiment-badges">
+                                    <span class="sentiment-badge positive">Positive 62%</span>
+                                    <span class="sentiment-badge neutral">Neutral 28%</span>
+                                    <span class="sentiment-badge negative">Negative 10%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TICKETS TAB -->
+                <div class="tab-content hidden" id="tab-tickets">
+                    <div class="dashboard-header">
+                        <h2 class="dashboard-title">All Tickets</h2>
+                        <p class="dashboard-subtitle">Manage and track all support tickets</p>
+                    </div>
+                    <div class="filter-bar">
+                        <input type="text" class="form-input search-input" placeholder="Search tickets...">
+                        <select class="form-select" style="width: auto;">
+                            <option value="">All Status</option>
+                            <option value="open">Open</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="escalated">Escalated</option>
+                        </select>
+                        <select class="form-select" style="width: auto;">
+                            <option value="">All Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="dashboard-card">
+                        <table class="tickets-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Subject</th>
+                                    <th>Category</th>
+                                    <th>Channel</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TKT-892341</td>
+                                    <td>John Doe</td>
+                                    <td>Login issue</td>
+                                    <td>Technical</td>
+                                    <td>Email</td>
+                                    <td><span class="status-badge resolved">Resolved</span></td>
+                                    <td>Medium</td>
+                                    <td>2024-01-15 10:30</td>
+                                </tr>
+                                <tr>
+                                    <td>TKT-892340</td>
+                                    <td>Jane Smith</td>
+                                    <td>Billing question</td>
+                                    <td>Billing</td>
+                                    <td>WhatsApp</td>
+                                    <td><span class="status-badge in-progress">In Progress</span></td>
+                                    <td>Low</td>
+                                    <td>2024-01-15 09:45</td>
+                                </tr>
+                                <tr>
+                                    <td>TKT-892339</td>
+                                    <td>Bob Wilson</td>
+                                    <td>Feature request</td>
+                                    <td>Feature</td>
+                                    <td>Web</td>
+                                    <td><span class="status-badge open">Open</span></td>
+                                    <td>Low</td>
+                                    <td>2024-01-15 08:20</td>
+                                </tr>
+                                <tr>
+                                    <td>TKT-892338</td>
+                                    <td>Alice Brown</td>
+                                    <td>API integration</td>
+                                    <td>Technical</td>
+                                    <td>Email</td>
+                                    <td><span class="status-badge escalated">Escalated</span></td>
+                                    <td>High</td>
+                                    <td>2024-01-15 07:15</td>
+                                </tr>
+                                <tr>
+                                    <td>TKT-892337</td>
+                                    <td>Charlie Davis</td>
+                                    <td>Password reset</td>
+                                    <td>Account</td>
+                                    <td>WhatsApp</td>
+                                    <td><span class="status-badge resolved">Resolved</span></td>
+                                    <td>Medium</td>
+                                    <td>2024-01-14 16:30</td>
+                                </tr>
+                                <tr>
+                                    <td>TKT-892336</td>
+                                    <td>Eva Martinez</td>
+                                    <td>Account upgrade</td>
+                                    <td>Billing</td>
+                                    <td>Web</td>
+                                    <td><span class="status-badge resolved">Resolved</span></td>
+                                    <td>Medium</td>
+                                    <td>2024-01-14 14:20</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CHANNELS TAB -->
+                <div class="tab-content hidden" id="tab-channels">
+                    <div class="dashboard-header">
+                        <h2 class="dashboard-title">Channels</h2>
+                        <p class="dashboard-subtitle">Multi-channel support performance</p>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Email Tickets</div>
+                            <div class="metric-value">93</div>
+                            <div class="metric-change positive">45% of total</div>
+                        </div>
+                        <div class="metric-card teal">
+                            <div class="metric-label">WhatsApp</div>
+                            <div class="metric-value">72</div>
+                            <div class="metric-change positive">35% of total</div>
+                        </div>
+                        <div class="metric-card amber">
+                            <div class="metric-label">Web Form</div>
+                            <div class="metric-value">42</div>
+                            <div class="metric-change positive">20% of total</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <h3 class="dashboard-card-title">Channel Performance</h3>
+                            <div class="channel-item">
+                                <div class="channel-info">
+                                    <span class="channel-dot email"></span>
+                                    <div>
+                                        <div><strong>Email</strong></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">93 tickets today</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: var(--accent-teal);">1.2s avg</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">response</div>
+                                </div>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-info">
+                                    <span class="channel-dot whatsapp"></span>
+                                    <div>
+                                        <div><strong>WhatsApp</strong></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">72 tickets today</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: var(--accent-teal);">1.4s avg</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">response</div>
+                                </div>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-info">
+                                    <span class="channel-dot web"></span>
+                                    <div>
+                                        <div><strong>Web Form</strong></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">42 tickets today</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: var(--accent-teal);">1.5s avg</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">response</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <h3 class="dashboard-card-title">Kafka Topics</h3>
+                            <div class="kafka-topics">
+                                <span class="kafka-topic">ticket-created</span>
+                                <span class="kafka-topic">ticket-updated</span>
+                                <span class="kafka-topic">ticket-resolved</span>
+                                <span class="kafka-topic">ticket-escalated</span>
+                                <span class="kafka-topic">sentiment-analyzed</span>
+                                <span class="kafka-topic">response-sent</span>
+                                <span class="kafka-topic">customer-identified</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AGENT TAB -->
+                <div class="tab-content hidden" id="tab-agent">
+                    <div class="dashboard-header">
+                        <h2 class="dashboard-title">AI Agent Status</h2>
+                        <p class="dashboard-subtitle">Gemini 1.5 Flash performance metrics</p>
+                    </div>
+                    <div class="dashboard-card mb-3" style="background: linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(10, 10, 15, 0) 100%); border-color: var(--accent-purple);">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span class="agent-status-dot" style="width: 16px; height: 16px;"></span>
+                            <div>
+                                <div style="font-size: 1.25rem; font-weight: 600;">AI Agent Online</div>
+                                <div style="color: var(--text-secondary);">Model: Gemini 1.5 Flash | Uptime: 99.9%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <h3 class="dashboard-card-title">Agent Skills</h3>
+                            <div class="skills-list">
+                                <div class="skill-item">
+                                    <span class="skill-name">knowledge_retrieval</span>
+                                    <div class="skill-stats">98% accuracy <span>| 0.3s avg</span></div>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">sentiment_analysis</span>
+                                    <div class="skill-stats">95% accuracy <span>| 0.2s avg</span></div>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">escalation_decision</span>
+                                    <div class="skill-stats">92% accuracy <span>| 0.4s avg</span></div>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">channel_adaptation</span>
+                                    <div class="skill-stats">99% accuracy <span>| 0.1s avg</span></div>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">customer_identification</span>
+                                    <div class="skill-stats">97% accuracy <span>| 0.5s avg</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <h3 class="dashboard-card-title">MCP Tools</h3>
+                            <div class="tools-list">
+                                <div class="tool-item"><span class="tool-dot"></span>search_knowledge_base</div>
+                                <div class="tool-item"><span class="tool-dot"></span>create_ticket</div>
+                                <div class="tool-item"><span class="tool-dot"></span>get_customer_history</div>
+                                <div class="tool-item"><span class="tool-dot"></span>escalate_to_human</div>
+                                <div class="tool-item"><span class="tool-dot"></span>send_response</div>
+                                <div class="tool-item"><span class="tool-dot"></span>analyze_sentiment</div>
+                                <div class="tool-item"><span class="tool-dot"></span>get_ticket_status</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- PAGE 4: ABOUT -->
+    <div class="page" id="page-about">
+        <div class="about-hero">
+            <h1>About TechCorp FTE</h1>
+            <p class="hero-subtitle" style="margin-top: 1rem;">Revolutionizing customer support with AI</p>
+        </div>
+        <div class="about-content">
+            <div class="mission-card">
+                <h2 class="mission-title">Our Mission</h2>
+                <p class="mission-text">
+                    To empower businesses with intelligent, always-available customer support that 
+                    combines the speed of AI with the empathy of human understanding. We believe 
+                    every customer deserves instant, accurate, and personalized assistance.
+                </p>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-card-icon">🎯</div>
+                    <h3 class="about-card-title">What We Do</h3>
+                    <p class="about-card-text">
+                        TechCorp FTE is an AI-powered customer success platform that handles support 
+                        tickets across Email, WhatsApp, and Web channels. Our system uses advanced 
+                        sentiment analysis and intelligent routing to deliver exceptional experiences.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">💡</div>
+                    <h3 class="about-card-title">How We're Different</h3>
+                    <p class="about-card-text">
+                        Unlike traditional chatbots, our AI maintains context across channels, 
+                        understands customer emotions, and knows when to escalate. With 84% 
+                        resolution rate and 1.4s average response time, we set new standards.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">🏗️</div>
+                    <h3 class="about-card-title">Our Technology</h3>
+                    <p class="about-card-text">
+                        Built on enterprise-grade infrastructure: FastAPI backend, PostgreSQL database, 
+                        Kafka messaging, and Kubernetes orchestration. Powered by Gemini 1.5 Flash 
+                        for lightning-fast AI responses.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">📊</div>
+                    <h3 class="about-card-title">Our Results</h3>
+                    <p class="about-card-text">
+                        332 passing tests, 28 API endpoints, 8 PostgreSQL tables, and 7 Kafka topics 
+                        power our system. We process thousands of tickets daily with 99.9% uptime.
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-item-icon">✨</div>
+                    <div class="tech-item-name">Gemini AI</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">⚡</div>
+                    <div class="tech-item-name">FastAPI</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🐘</div>
+                    <div class="tech-item-name">PostgreSQL</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">📡</div>
+                    <div class="tech-item-name">Kafka</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">☸️</div>
+                    <div class="tech-item-name">Kubernetes</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🤖</div>
+                    <div class="tech-item-name">Claude Code</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">📱</div>
+                    <div class="tech-item-name">Twilio</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">📧</div>
+                    <div class="tech-item-name">Gmail API</div>
+                </div>
+            </div>
+
+            <div class="numbers-section">
+                <div class="number-item">
+                    <div class="number-value">332</div>
+                    <div class="number-label">Tests Passing</div>
+                </div>
+                <div class="number-item">
+                    <div class="number-value">28</div>
+                    <div class="number-label">API Endpoints</div>
+                </div>
+                <div class="number-item">
+                    <div class="number-value">8</div>
+                    <div class="number-label">DB Tables</div>
+                </div>
+                <div class="number-item">
+                    <div class="number-value">7</div>
+                    <div class="number-label">Kafka Topics</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <div class="logo-icon">T</div>
+                        <span class="logo-text">TechCorp <span>FTE</span></span>
+                    </div>
+                    <p class="footer-tagline">AI-Powered Customer Success Platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" onclick="navigateTo('home')">Home</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('support')">Support</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('dashboard')">Dashboard</a>
+                    <a href="#" class="footer-link" onclick="navigateTo('about')">About</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- CHAT WIDGET -->
+    <button class="chat-widget-btn" id="chatWidgetBtn" onclick="toggleChatWidget()" title="Chat with AI Support">
+        💬
+    </button>
+    
+    <div class="chat-widget-panel" id="chatWidgetPanel">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-header-avatar">🤖</div>
+                <div class="chat-header-text">
+                    <h4>TechCorp AI Support</h4>
+                    <div class="chat-header-status">
+                        <span class="chat-status-dot"></span>
+                        Online
+                    </div>
+                </div>
+            </div>
+            <button class="chat-close-btn" onclick="toggleChatWidget()">×</button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message assistant">
+                Hello! I'm the TechCorp AI assistant powered by Gemini AI. How can I help you today?
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeyPress(event)">
+            <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">➤</button>
+        </div>
+        
+        <div class="chat-footer">
+            Powered by <a href="#" target="_blank">Gemini AI</a>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // Dynamic API base URL - uses localhost for local dev, production URL otherwise
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000'
+            : window.location.origin;
+        
+        // ===== NAVIGATION =====
+        function navigateTo(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show target page
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // ===== MOBILE MENU =====
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ===== SUPPORT FORM =====
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            // Generate random ticket ID
+            const ticketId = 'TKT-' + Math.floor(100000 + Math.random() * 900000);
+            
+            // Show success message
+            document.getElementById('ticketIdDisplay').textContent = ticketId;
+            document.getElementById('successMessage').classList.add('show');
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.remove('show');
+                clearForm();
+            }, 5000);
+        }
+
+        function clearForm() {
+            document.getElementById('supportForm').reset();
+            document.getElementById('charCount').textContent = '0';
+        }
+
+        // Character counter
+        document.getElementById('messageInput').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        // ===== TICKET TRACKER =====
+        function trackTicket() {
+            const ticketId = document.getElementById('trackInput').value.trim();
+            
+            if (!ticketId) {
+                alert('Please enter a ticket ID');
+                return;
+            }
+            
+            // Mock data based on ticket ID
+            const statuses = ['open', 'in-progress', 'resolved', 'escalated'];
+            const channels = ['Email', 'WhatsApp', 'Web Form'];
+            const priorities = ['Low', 'Medium', 'High', 'Urgent'];
+            const categories = ['Technical', 'Billing', 'Feature', 'Account', 'Other'];
+            
+            // Use hash of ticket ID for consistent mock data
+            const hash = ticketId.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0);
+            
+            const statusIndex = Math.abs(hash) % statuses.length;
+            const channelIndex = Math.abs(hash + 1) % channels.length;
+            const priorityIndex = Math.abs(hash + 2) % priorities.length;
+            const categoryIndex = Math.abs(hash + 3) % categories.length;
+            
+            // Update tracker result
+            document.getElementById('trackTicketId').textContent = ticketId;
+            document.getElementById('trackStatus').textContent = statuses[statusIndex].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('trackStatus').className = 'status-badge ' + statuses[statusIndex];
+            document.getElementById('trackChannel').textContent = channels[channelIndex];
+            document.getElementById('trackPriority').textContent = priorities[priorityIndex];
+            document.getElementById('trackCategory').textContent = categories[categoryIndex];
+            
+            // Random date in last 7 days
+            const daysAgo = Math.abs(hash + 4) % 7;
+            const date = new Date();
+            date.setDate(date.getDate() - daysAgo);
+            date.setHours(8 + (Math.abs(hash + 5) % 12), Math.abs(hash + 6) % 60);
+            document.getElementById('trackCreated').textContent = date.toISOString().slice(0, 16).replace('T', ' ');
+            
+            // Show result
+            document.getElementById('trackerResult').classList.add('show');
+        }
+
+        // ===== DASHBOARD TABS =====
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+                tab.classList.remove('active');
+            });
+            
+            // Show target tab
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            // Update sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.tab === tabId) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // ===== RESPONSIVE MENU =====
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                document.getElementById('navLinks').style.display = 'flex';
+            } else {
+                document.getElementById('navLinks').style.display = 'none';
+            }
+        });
+
+        // Initialize responsive menu state
+        if (window.innerWidth <= 768) {
+            document.getElementById('navLinks').style.display = 'none';
+        }
+
+        // ===== CHAT WIDGET =====
+        let chatConversationHistory = [];
+        let chatTicketId = null;
+
+        function toggleChatWidget() {
+            const panel = document.getElementById('chatWidgetPanel');
+            panel.classList.toggle('active');
+            if (panel.classList.contains('active')) {
+                setTimeout(() => document.getElementById('chatInput').focus(), 300);
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function addChatMessage(content, role) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message ' + role;
+            messageDiv.textContent = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<div class="chat-typing-dot"></div><div class="chat-typing-dot"></div><div class="chat-typing-dot"></div>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add user message to chat
+            addChatMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Prepare conversation history for API
+            const history = chatConversationHistory.map(msg => ({
+                role: msg.role,
+                content: msg.content
+            }));
+
+            try {
+                const response = await fetch(API_BASE + '/support/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        customer_name: 'Website Visitor',
+                        customer_email: 'visitor@example.com',
+                        channel: 'web_form',
+                        conversation_history: history
+                    })
+                });
+
+                hideTypingIndicator();
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // Add AI response to chat
+                addChatMessage(data.response, 'assistant');
+
+                // Store ticket ID if new conversation
+                if (!chatTicketId) {
+                    chatTicketId = data.ticket_id;
+                }
+
+                // Update conversation history
+                chatConversationHistory.push({ role: 'user', content: message });
+                chatConversationHistory.push({ role: 'assistant', content: data.response });
+
+                // Keep only last 10 messages in history
+                if (chatConversationHistory.length > 10) {
+                    chatConversationHistory = chatConversationHistory.slice(-10);
+                }
+
+                // Handle escalation
+                if (data.escalated) {
+                    setTimeout(() => {
+                        addChatMessage('⚠️ Your conversation has been escalated to a human agent. They will contact you shortly.', 'escalated');
+                    }, 1000);
+                }
+
+            } catch (error) {
+                hideTypingIndicator();
+                console.error('Chat error:', error);
+                addChatMessage('Sorry, I encountered an error. Please try again.', 'assistant');
+            }
+        }
+    </script>
+</body>
+</html>
